@@ -71,13 +71,13 @@ public class CustomerRepositoryServiceImpl extends DefaultRepositoryService<Cust
             specs.add(CustomerSpecs.hasActive(filter.isActive()));
         }
 
-        Specification<Customer> spec = null;
-        for (Specification<Customer> specification : specs) {
-            if (spec == null) {
-                spec = Specification.where(specification);
-            } else {
-                spec = spec.and(specification);
-            }
+        if (specs.isEmpty()) {
+            return (root, query, cb) -> cb.conjunction();
+        }
+
+        Specification<Customer> spec = specs.get(0);
+        for (int i = 1; i < specs.size(); i++) {
+            spec = spec.and(specs.get(i));
         }
 
         return spec;
